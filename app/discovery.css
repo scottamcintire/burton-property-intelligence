@@ -1,0 +1,91 @@
+/* Burton & Burton Property Intelligence — shared discovery styles.
+   Carried over unchanged from Elgin Road v0.1; additions are marked "v0.1.1". */
+:root{--navy:#102a3b;--gold:#b89c70;--paper:#f7f5f0;--ink:#1d303d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+header{background:var(--navy);color:white;padding:22px 3.5%;display:flex;align-items:center;justify-content:space-between;gap:15px}
+header h1{font-family:Georgia,serif;font-size:clamp(25px,3vw,42px);letter-spacing:.11em;margin:0}
+header small{letter-spacing:.17em;color:#dfcfb7}
+header .brand{text-align:right;font-size:12px;line-height:1.7}
+header .edition{color:#d2b992}
+.intro{padding:23px 3.5% 13px;display:flex;justify-content:space-between;gap:18px;align-items:end}
+.intro h2{font-family:Georgia,serif;font-size:23px;margin:0 0 6px}
+.intro p{margin:0;color:#63727b;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(330px,1fr);gap:20px;padding:12px 3.5% 32px}
+.mapcard,.side{background:white;border:1px solid #e2e4e3;border-radius:12px;overflow:hidden;box-shadow:0 8px 28px #102a3b0a}
+.mapbar{padding:14px 18px;display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid #e7e7e7}
+.mapbar strong{font-family:Georgia,serif}
+.mapframe{height:min(68vh,710px);min-height:440px;overflow:auto;background:#e2e6e6;position:relative;cursor:zoom-in}
+.mapframe img{display:block;width:100%;min-width:700px;transition:width .2s}
+.mapframe.zoom img{width:160%}
+.mapnote{font-size:12px;color:#60717d;padding:12px 18px;border-top:1px solid #eee}
+.mapcredit{display:block;margin-top:6px;font-size:10.5px;color:#8a979c} /* v0.1.1 */
+.toolbar{padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid #eee}
+input,select,textarea{font:inherit;border:1px solid #d6dcd9;border-radius:6px;padding:10px;width:100%;background:#fff}
+button{font:inherit;cursor:pointer;border:1px solid #c9d3d4;background:white;border-radius:6px;padding:9px 11px;color:var(--navy)}
+button.primary{background:var(--navy);color:white;border-color:var(--navy)}
+button.active{background:#e7eee9;border-color:#75918a}
+.propertylist{max-height:245px;overflow:auto;border-bottom:1px solid #e7e7e7}
+.row{padding:11px 16px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:13px}
+.row:hover,.row.selected{background:#f2f3ef}
+.row b{display:block;font-size:14px}
+.row small{color:#697b80}
+.row .est{font-size:10px;letter-spacing:.06em;color:#8a979c;font-weight:normal;margin-right:4px} /* v0.1.1 */
+.profile{padding:20px}
+.eyebrow{font-size:10px;letter-spacing:.2em;color:#92754f;text-transform:uppercase}
+.profile h2{font-family:Georgia,serif;font-size:27px;margin:8px 0}
+.price{font-family:Georgia,serif;font-size:22px;color:#20475a}
+.muted{font-size:12px;color:#728088}
+.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0}
+.spec{border-top:1px solid #e6e6e6;padding-top:8px}
+.spec label{display:block;color:#7a878b;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.spec b{font-size:14px}
+.photo{background:#e7e9e8;height:115px;display:grid;place-items:center;text-align:center;color:#697b80;font-size:12px;padding:16px;margin:12px 0}
+.ratings{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.ratings button{font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{font-size:12px}
+.favorites{padding:15px;background:#f4f5f2;border-radius:8px;margin:14px 0;font-size:13px}
+.foot{padding:20px 3.5%;font-size:11px;color:#6d7a7f;line-height:1.6}
+.badge{font-size:10px;padding:3px 6px;border-radius:4px;background:#eee}
+.hidden{display:none}
+.toggle{white-space:nowrap}
+.loaderror{padding:40px 3.5%;font-size:14px;color:#7a2e2e} /* v0.1.1 */
+@media(max-width:900px){.layout{grid-template-columns:1fr}.mapframe{height:47vh;min-height:320px}.propertylist{max-height:230px}.intro{display:block}.intro button{margin-top:12px}}
+@media print{header{print-color-adjust:exact}.mapframe{height:420px}.toolbar,.propertylist,.ratings,.actions{display:none}.layout{grid-template-columns:1.3fr 1fr}}
+
+/* ---- Private collection welcome (app/gate.js) ---- */
+.gate-body{background:#0d2333}
+.gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px 28px;color:#f3ede3;
+  background:radial-gradient(ellipse at 50% 38%,#18384d 0%,#102a3b 46%,#0a1c28 100%);position:relative;overflow:hidden;transition:opacity .45s ease}
+.gate::before{content:"";position:absolute;inset:-20%;pointer-events:none;opacity:.07;
+  background:repeating-radial-gradient(circle at 78% 112%,transparent 0 38px,#c9ae80 38px 39px)}
+.gate-out{opacity:0}
+.gate-card{position:relative;width:min(680px,100%);text-align:center;animation:gateIn .9s ease both}
+@keyframes gateIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.gate-brand{font-family:Georgia,serif;font-size:13px;letter-spacing:.42em;color:#d6bf95;padding-left:.42em}
+.gate-rule{width:56px;height:1px;background:#b89c70;margin:18px auto}
+.gate-collection{font-size:10.5px;letter-spacing:.38em;color:#b8c3c9;padding-left:.38em}
+.gate h1{font-family:Didot,"Bodoni 72","Playfair Display",Georgia,serif;font-weight:400;font-size:clamp(38px,5vw,60px);line-height:1.08;letter-spacing:.01em;margin:30px 0 12px;color:#fbf8f2;text-wrap:balance}
+.gate-sub{font-family:Georgia,serif;font-style:italic;font-size:19px;color:#e2d6c2;margin:0 0 22px}
+.gate-note{font-size:13.5px;line-height:1.7;color:#a9b6bd;margin:0 auto 38px;max-width:470px}
+.gate-form{max-width:340px;margin:0 auto}
+.gate-label{display:block;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#93a3ab;margin-bottom:10px}
+.gate-field{display:flex;align-items:center;border-bottom:1px solid #6f838d;transition:border-color .2s}
+.gate-field:focus-within{border-color:#d6bf95}
+.gate-field input{flex:1;background:transparent;border:0;border-radius:0;color:#fbf8f2;font-size:18px;letter-spacing:.08em;text-align:center;padding:10px 4px;outline:none}
+.gate-show{background:none;border:0;color:#93a3ab;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 2px}
+.gate-show:hover{color:#d6bf95}
+.gate-enter{display:block;width:100%;margin-top:30px;padding:14px 18px;background:transparent;border:1px solid #b89c70;border-radius:2px;color:#f3e6cf;
+  font-family:Georgia,serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;transition:background .25s,color .25s}
+.gate-enter:hover:not(:disabled),.gate-enter:focus-visible{background:#b89c70;color:#0d2333;outline:none}
+.gate-enter:disabled{opacity:.7;cursor:progress}
+.gate-msg{min-height:20px;margin:16px 0 0;font-size:13px;color:#f0b9a8}
+.gate-opening{font-family:Georgia,serif;font-style:italic;color:#d6bf95;font-size:15px}
+.gate-foot{position:relative;margin-top:56px;font-size:10.5px;letter-spacing:.14em;color:#71838c}
+.gate-shake{animation:gateShake .4s ease}
+@keyframes gateShake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.lockbtn{background:none;border:0;padding:0;margin-top:4px;color:#9fb0b8;font-size:11px;letter-spacing:.12em;text-decoration:underline;text-underline-offset:3px}
+.lockbtn:hover{color:#fff}
+@media(max-width:600px){.gate h1{font-size:36px}.gate-brand{letter-spacing:.3em}}
+@media(prefers-reduced-motion:reduce){.gate-card,.gate-shake{animation:none}.gate{transition:none}}
