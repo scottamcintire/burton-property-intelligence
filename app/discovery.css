@@ -89,3 +89,4 @@ button.active{background:#e7eee9;border-color:#75918a}
 .lockbtn:hover{color:#fff}
 @media(max-width:600px){.gate h1{font-size:36px}.gate-brand{letter-spacing:.3em}}
 @media(prefers-reduced-motion:reduce){.gate-card,.gate-shake{animation:none}.gate{transition:none}}
+.savestatus{font-size:12px;color:#5d7f73;margin-left:6px} /* automatic save confirmation */

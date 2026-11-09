@@ -99,6 +99,63 @@
     function state() { return saved[selected.address] || { rating: '', notes: '' }; }
     function persist() { try { localStorage.setItem(key, JSON.stringify(saved)); } catch (e) { /* private mode */ } }
 
+    /* ---- Automatic sending of choices (optional; project.json → saveTo.url) ----
+       Each change is kept in this browser first, then sent to the team's private Google Sheet
+       a moment later. Failed sends are retried every 30 seconds and on the next visit. */
+    var remote = cfg.saveTo && cfg.saveTo.url ? cfg.saveTo : null;
+    var timers = {}, inflight = {}, byAddr = {};
+    data.forEach(function (x) { byAddr[x.address] = x; });
+    function unsent(addr) {
+      var s = saved[addr]; if (!s || !byAddr[addr]) return false;
+      var t = s.sent || {};
+      return (s.rating || '') !== (t.rating || '') || (s.notes || '') !== (t.notes || '');
+    }
+    function payload(addr) {
+      var x = byAddr[addr], s = saved[addr];
+      return JSON.stringify({ token: remote.token, project: cfg.id, address: addr, number: x.number,
+        interest: ratingLabel[s.rating] || '', notes: s.notes || '', estimate: x.estimate, clientTime: new Date().toISOString() });
+    }
+    function showStatus(addr) {
+      var el = $('savestatus'); if (!el || selected.address !== addr) return;
+      var s = saved[addr], text = '';
+      if (s && (s.rating || s.notes)) {
+        if (!remote) text = 'Saved ✓';
+        else if (inflight[addr] || timers[addr]) text = 'Saving…';
+        else text = unsent(addr) ? 'Not saved yet, retrying…' : 'Saved ✓';
+      }
+      el.textContent = text;
+    }
+    function queue(addr, ms) {
+      if (!remote) return showStatus(addr);
+      clearTimeout(timers[addr]);
+      timers[addr] = setTimeout(function () { send(addr); }, ms);
+      showStatus(addr);
+    }
+    async function send(addr) {
+      clearTimeout(timers[addr]); delete timers[addr];
+      if (!remote || inflight[addr] || !unsent(addr)) return showStatus(addr);
+      var snap = { rating: saved[addr].rating || '', notes: saved[addr].notes || '' }, ok = false;
+      inflight[addr] = true; showStatus(addr);
+      try {
+        var r = await fetch(remote.url, { method: 'POST', body: payload(addr) });   // text/plain: no preflight
+        var j = await r.json();
+        if (!j.ok) throw new Error(j.error || 'not saved');
+        saved[addr] = Object.assign({}, saved[addr], { sent: snap }); persist(); ok = true;
+      } catch (e) { /* kept locally; retried below */ }
+      delete inflight[addr];
+      if (ok && unsent(addr)) queue(addr, 800);   // changed while sending
+      else showStatus(addr);
+    }
+    function flushAll() { Object.keys(saved).forEach(function (a) { if (unsent(a) && !timers[a]) send(a); }); }
+    if (remote) {
+      setInterval(flushAll, 30000);
+      addEventListener('pagehide', function () {
+        Object.keys(saved).forEach(function (a) {
+          if (unsent(a) && navigator.sendBeacon) navigator.sendBeacon(remote.url, new Blob([payload(a)], { type: 'text/plain' }));
+        });
+      });
+    }
+
     function renderList() {
       var q = $('search').value.toLowerCase(), w = $('water').value, r = $('rating').value;
       var band = (cfg.priceBands || [])[$('price').value];
@@ -136,14 +193,21 @@
         '<div class="eyebrow">Your interest in this property</div>' +
         '<div class="ratings">' + RATINGS.map(function (r) { return '<button class="' + (s.rating === r[0] ? 'active' : '') + '" data-rate="' + r[0] + '">' + r[1] + '</button>'; }).join('') + '</div>' +
         '<textarea id="notes" rows="2" placeholder="What do you like or dislike?">' + esc(s.notes || '') + '</textarea>' +
-        '<div class="actions" style="margin-top:10px"><button id="save" class="primary">Save preference</button><button id="similar">Find similar homes</button></div>' +
-        '<div class="favorites"><b>My shortlist:</b> ' + loved + ' loved · ' + interested + ' interested<br><small>Selections are stored locally on this device; use Export to share them.</small></div>';
+        '<div class="actions" style="margin-top:10px;align-items:center"><button id="similar">Find similar homes</button><span class="savestatus" id="savestatus" aria-live="polite"></span></div>' +
+        '<div class="favorites"><b>My shortlist:</b> ' + loved + ' loved · ' + interested + ' interested<br><small>Your choices and notes are saved automatically. Use Export to download a copy.</small></div>';
 
       document.querySelectorAll('[data-rate]').forEach(function (b) {
-        b.onclick = function () { saved[x.address] = { rating: b.dataset.rate, notes: $('notes').value }; persist(); render(); };
+        b.onclick = function () {
+          saved[x.address] = Object.assign({}, saved[x.address], { rating: b.dataset.rate, notes: $('notes').value });
+          persist(); render(); queue(x.address, 1200);
+        };
       });
-      $('notes').oninput = function () { saved[x.address] = Object.assign({}, state(), { notes: $('notes').value }); persist(); };
-      $('save').onclick = function () { saved[x.address] = Object.assign({}, state(), { notes: $('notes').value }); persist(); render(); };
+      $('notes').oninput = function () {
+        saved[x.address] = Object.assign({}, state(), { notes: $('notes').value });
+        persist(); queue(x.address, 2500);
+      };
+      $('notes').onblur = function () { if (timers[x.address]) send(x.address); };
+      showStatus(x.address);
       $('similar').onclick = function () {
         var options = data.filter(function (z) { return z.number !== x.number && z.type === x.type; })
           .map(function (z) { return { z: z, score: (z.water === x.water ? 4 : 0) + (z.beds === x.beds ? 2 : 0) - Math.abs(z.estimate - x.estimate) / 500000 }; })
@@ -170,6 +234,7 @@
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
     };
     render();
+    if (remote) flushAll();
   }
 
   load();
