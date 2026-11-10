@@ -214,6 +214,7 @@
         spec('Square feet', x.sqft ? Number(x.sqft).toLocaleString() : 'Land only') +
         spec('Lot', acres != null ? acres + ' acres' : '—') +
         spec('Year built', x.year || '—') +
+        spec('Current owner since', x.ownerSince ? x.ownerSince.display : '—') +
         spec('Est. annual taxes', taxes(x).text, taxes(x).note, (cfg.tax || {}).note) +
         spec('Water relationship', x.water + (x.waterUnconfirmed ? ' (unconfirmed)' : '')) +
         spec('Research confidence', x.confidence) + '</div>' +
