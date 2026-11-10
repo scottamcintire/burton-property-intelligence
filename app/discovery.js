@@ -90,7 +90,7 @@
     document.body.innerHTML =
       '<header><div><small>' + esc(cfg.locationLine) + '</small><h1>' + esc(cfg.headline) + '</h1><small>' + esc(cfg.subtitle) + '</small></div>' +
       '<div class="brand">' + (cfg.preparedBy || []).map(esc).join('<br>') + (cfg.edition ? '<br><span class="edition">' + esc(cfg.edition) + '</span>' : '') +
-      (gate ? '<br><button class="lockbtn" id="lock" title="Close the collection on this device">Lock collection</button>' : '') + '</div></header>' +
+      (gate ? '<br><button class="lockbtn" id="lock" title="Log out on this device">Logout</button>' : '') + '</div></header>' +
       '<section class="intro"><div>' + (cfg.introHeading ? '<h2>' + esc(cfg.introHeading) + '</h2>' : '') + '<p>' + esc(counts.join(' · ')) + '</p></div><button id="export" class="primary">Export my selections ↓</button></section>' +
       '<main class="layout"><section class="mapcard"><div class="mapbar"><strong id="maptitle">' + esc(m.title) + '</strong>' +
       '<span class="mapbtns"><button id="showmap" class="toggle active" aria-pressed="true">Map</button><button id="zoom" class="toggle">Zoom map +</button><button id="prev" class="toggle" title="Previous property in street order">‹ Back</button><button id="next" class="toggle" title="Next property in street order">Next ›</button></span></div>' +

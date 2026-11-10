@@ -1,7 +1,7 @@
 {
  "format": "bbpi-locked-1",
  "projectId": "elgin-road-preview",
- "build": "9685267aee5a",
+ "build": "b7712352e8f8",
  "welcome": {
   "pageTitle": "PREVIEW · Elgin Road",
   "brand": "BURTON & BURTON",
@@ -19,9 +19,9 @@
  },
  "slots": [
   {
-   "salt": "6fydgfODqgFVgVY2UcHMvA==",
-   "iv": "U73V6cqIacD1cXIX",
-   "key": "j0znaKVuC831i7FggcUEhi7tDD/aAaMS4PaoaTDUG+vEwzmbYJa74FwaC/cVfVCW"
+   "salt": "BEj5BiHKKBIviCUlUJJs9g==",
+   "iv": "FEAG6lcZqTuUu3BZ",
+   "key": "uM9l8iirZsEAuB1O/iZSosQC5IG9J2PTE1WalueD4Dx9rWL3OTqUIrEHijCb+l1G"
   }
  ],
  "data": "data.enc",
