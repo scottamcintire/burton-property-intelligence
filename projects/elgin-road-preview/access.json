@@ -1,0 +1,106 @@
+{
+ "format": "bbpi-locked-1",
+ "projectId": "elgin-road-preview",
+ "build": "37f3cd650c86",
+ "welcome": {
+  "pageTitle": "PREVIEW · Elgin Road",
+  "brand": "BURTON & BURTON",
+  "collection": "PREVIEW · PLACEHOLDER PHOTOS",
+  "heading": "Welcome to Elgin Road",
+  "subheading": "Your Private Property Discovery Experience",
+  "note": "An exclusive collection prepared for you by Scott & Cheryl McIntire.",
+  "button": "Enter Collection",
+  "footnote": "Private & confidential · Please do not forward this link or password."
+ },
+ "kdf": {
+  "name": "PBKDF2",
+  "hash": "SHA-256",
+  "iterations": 600000
+ },
+ "slots": [
+  {
+   "salt": "8ucgiVLR+hpEcUUYdag4Ag==",
+   "iv": "pnmaTmJbnI66kWWp",
+   "key": "VKDCy25GW2j+wr4HvWkmhcv96C7rfXLa0AR5jl9FJx9E1NXBRmVmSscbeJwIqi13"
+  }
+ ],
+ "data": "data.enc",
+ "assets": {
+  "assets/street-map.png": {
+   "file": "assets/street-map.png.enc",
+   "type": "image/png"
+  },
+  "assets/photos/15/1.jpg": {
+   "file": "assets/photos/15/1.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/15/2.jpg": {
+   "file": "assets/photos/15/2.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/15/3.jpg": {
+   "file": "assets/photos/15/3.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/15/4.jpg": {
+   "file": "assets/photos/15/4.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/15/5.jpg": {
+   "file": "assets/photos/15/5.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/15/6.jpg": {
+   "file": "assets/photos/15/6.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/76/1.jpg": {
+   "file": "assets/photos/76/1.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/76/2.jpg": {
+   "file": "assets/photos/76/2.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/76/3.jpg": {
+   "file": "assets/photos/76/3.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/76/4.jpg": {
+   "file": "assets/photos/76/4.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/76/5.jpg": {
+   "file": "assets/photos/76/5.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/76/6.jpg": {
+   "file": "assets/photos/76/6.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/87/1.jpg": {
+   "file": "assets/photos/87/1.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/87/2.jpg": {
+   "file": "assets/photos/87/2.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/87/3.jpg": {
+   "file": "assets/photos/87/3.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/87/4.jpg": {
+   "file": "assets/photos/87/4.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/87/5.jpg": {
+   "file": "assets/photos/87/5.jpg.enc",
+   "type": "image/jpeg"
+  },
+  "assets/photos/87/6.jpg": {
+   "file": "assets/photos/87/6.jpg.enc",
+   "type": "image/jpeg"
+  }
+ }
+}
