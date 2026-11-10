@@ -270,6 +270,13 @@
       photoIndex = (i + ph.length) % ph.length;
       var p = ph[photoIndex], img = $('photomain'), forAddr = selected.address;
       img.classList.add('loading'); img.alt = (p.caption || selected.address) + ' (photo ' + (photoIndex + 1) + ' of ' + ph.length + ')';
+      img.style.width = ''; img.onload = function () {           // small assessor photos: enlarge (up to 2.5x) instead of a postage stamp
+        var box = img.parentNode.getBoundingClientRect();
+        if (img.naturalWidth && img.naturalWidth < 700) {
+          var k = Math.min(2.5, box.width * 0.9 / img.naturalWidth, box.height * 0.9 / img.naturalHeight);
+          if (k > 1) img.style.width = Math.round(img.naturalWidth * k) + 'px';
+        }
+      };
       assetUrl(p.src).then(function (u) { if (selected.address === forAddr) { img.src = u; img.classList.remove('loading'); } });
       $('photocap').textContent = 'Photo ' + (photoIndex + 1) + ' of ' + ph.length + (p.caption ? ' · ' + p.caption : '') +
         ' · Source: ' + p.source + ', ' + p.date;
