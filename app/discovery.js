@@ -91,9 +91,9 @@
       '<header><div><small>' + esc(cfg.locationLine) + '</small><h1>' + esc(cfg.headline) + '</h1><small>' + esc(cfg.subtitle) + '</small></div>' +
       '<div class="brand">' + (cfg.preparedBy || []).map(esc).join('<br>') + (cfg.edition ? '<br><span class="edition">' + esc(cfg.edition) + '</span>' : '') +
       (gate ? '<br><button class="lockbtn" id="lock" title="Close the collection on this device">Lock collection</button>' : '') + '</div></header>' +
-      '<section class="intro"><div><h2>' + esc(cfg.introHeading) + '</h2><p>' + esc(counts.join(' · ')) + '</p></div><button id="export" class="primary">Export my selections ↓</button></section>' +
+      '<section class="intro"><div>' + (cfg.introHeading ? '<h2>' + esc(cfg.introHeading) + '</h2>' : '') + '<p>' + esc(counts.join(' · ')) + '</p></div><button id="export" class="primary">Export my selections ↓</button></section>' +
       '<main class="layout"><section class="mapcard"><div class="mapbar"><strong id="maptitle">' + esc(m.title) + '</strong>' +
-      '<span class="mapbtns"><button id="showmap" class="toggle active" aria-pressed="true">Map</button><button id="zoom" class="toggle">Zoom map +</button><button id="next" class="toggle" title="Next property in street order">Next ›</button></span></div>' +
+      '<span class="mapbtns"><button id="showmap" class="toggle active" aria-pressed="true">Map</button><button id="zoom" class="toggle">Zoom map +</button><button id="prev" class="toggle" title="Previous property in street order">‹ Back</button><button id="next" class="toggle" title="Next property in street order">Next ›</button></span></div>' +
       '<div class="mapframe" id="mapframe"><div class="mapstage" id="mapstage"><img src="' + esc(m.image) + '" alt="' + esc(m.alt) + '">' +
       '<svg class="lots" id="lots" viewBox="0 0 100 100" preserveAspectRatio="none" role="group" aria-label="Properties on the map">' +
       data.filter(function (x) { return x.mapHotspot && x.mapHotspot.verified && x.mapHotspot.points; }).map(function (x) {
@@ -288,8 +288,7 @@
         }
       };
       assetUrl(p.src).then(function (u) { if (selected.address === forAddr) { img.src = u; img.classList.remove('loading'); } });
-      $('photocap').textContent = 'Photo ' + (photoIndex + 1) + ' of ' + ph.length + (p.caption ? ' · ' + p.caption : '') +
-        ' · Source: ' + p.source + ', ' + p.date;
+      $('photocap').textContent = 'Photo ' + (photoIndex + 1) + ' of ' + ph.length + ' · Source: ' + p.source + ', ' + p.date;
       document.querySelectorAll('.thumb').forEach(function (t) { t.classList.toggle('active', +t.dataset.i === photoIndex); });
     }
     function showPhotos() {
@@ -322,10 +321,12 @@
     });
     $('showmap').onclick = function () { setView('map'); };
     var streetOrder = data.slice().sort(function (a, b) { return a.number - b.number; });
-    $('next').onclick = function () {
+    function step(d) {                          // street order, wrapping at both ends
       var i = streetOrder.findIndex(function (x) { return x.number === selected.number; });
-      choose(streetOrder[(i + 1) % streetOrder.length].number);
-    };
+      choose(streetOrder[(i + d + streetOrder.length) % streetOrder.length].number);
+    }
+    $('next').onclick = function () { step(1); };
+    $('prev').onclick = function () { step(-1); };
     $('resetfilters').onclick = function () {
       $('search').value = ''; $('water').value = ''; $('price').value = ''; $('rating').value = '';
       renderList();
@@ -334,7 +335,7 @@
       var hk = key + '-hint-seen';
       try { if (localStorage.getItem(hk)) return; } catch (e) { return; }
       var h = document.createElement('div'); h.className = 'hint'; h.id = 'hint';
-      h.innerHTML = '<span><b>Welcome.</b> Click any home on the map to see its photos and details · rate the ones you like · use <b>Next ›</b> to tour the street.</span><button id="hintok">Got it</button>';
+      h.innerHTML = '<span><b>Welcome.</b> Click any home on the map to see its photos and details · rate the ones you like · use <b>‹ Back</b> and <b>Next ›</b> to tour the street.</span><button id="hintok">Got it</button>';
       document.querySelector('.mapcard').appendChild(h);
       $('hintok').onclick = function () { h.remove(); try { localStorage.setItem(hk, '1'); } catch (e) {} };
     })();
