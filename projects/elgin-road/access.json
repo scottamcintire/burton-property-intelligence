@@ -1,7 +1,7 @@
 {
  "format": "bbpi-locked-1",
  "projectId": "elgin-road",
- "build": "bde29ca1691c",
+ "build": "ea5bd532801a",
  "welcome": {
   "pageTitle": "Elgin Road · Private Property Collection",
   "brand": "BURTON & BURTON",
@@ -19,9 +19,9 @@
  },
  "slots": [
   {
-   "salt": "9AaVTrJLvBO2JqhP1qsVOQ==",
-   "iv": "vOMX7Byj6VHblTVP",
-   "key": "2b+Dh/ZrUj5H9ODs+DFl2jFqHPTook9WG+EtLlRVH8gEPB9NZAnXW+dmQd1EWNaT"
+   "salt": "PsurisQoRWmTcQi7+JZuvw==",
+   "iv": "9U1vx0WorAJDJ0Ga",
+   "key": "UjAUbSG3FN6Zq7QetofZp9IEnPgrOOoYkYoKVYnsBTGOb29O9m3vGNtM+a/eZ/t9"
   }
  ],
  "data": "data.enc",

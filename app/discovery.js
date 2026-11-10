@@ -31,6 +31,11 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
   function money(n) { return '$' + Number(n).toLocaleString('en-US'); }
+  function shortMoney(n) {                    // $1.34M, $2.1M, $550K: reads as a ballpark, not an asking price
+    n = Number(n);
+    if (n >= 1e6) return '$' + String(+(n / 1e6).toFixed(3)) + 'M';
+    return '$' + Math.round(n / 1000) + 'K';
+  }
   function $(id) { return document.getElementById(id); }
 
   async function load() {
@@ -88,7 +93,7 @@
       (gate ? '<br><button class="lockbtn" id="lock" title="Close the collection on this device">Lock collection</button>' : '') + '</div></header>' +
       '<section class="intro"><div><h2>' + esc(cfg.introHeading) + '</h2><p>' + esc(counts.join(' · ')) + '</p></div><button id="export" class="primary">Export my selections ↓</button></section>' +
       '<main class="layout"><section class="mapcard"><div class="mapbar"><strong id="maptitle">' + esc(m.title) + '</strong>' +
-      '<span class="mapbtns"><button id="showmap" class="toggle active" aria-pressed="true">Map</button><button id="zoom" class="toggle">Zoom map +</button></span></div>' +
+      '<span class="mapbtns"><button id="showmap" class="toggle active" aria-pressed="true">Map</button><button id="zoom" class="toggle">Zoom map +</button><button id="next" class="toggle" title="Next property in street order">Next ›</button></span></div>' +
       '<div class="mapframe" id="mapframe"><div class="mapstage" id="mapstage"><img src="' + esc(m.image) + '" alt="' + esc(m.alt) + '">' +
       '<svg class="lots" id="lots" viewBox="0 0 100 100" preserveAspectRatio="none" role="group" aria-label="Properties on the map">' +
       data.filter(function (x) { return x.mapHotspot && x.mapHotspot.verified && x.mapHotspot.points; }).map(function (x) {
@@ -101,7 +106,8 @@
       '<section class="side"><div class="toolbar"><input id="search" placeholder="Search address..." aria-label="Search address">' +
       '<select id="water" aria-label="Water relationship"><option value="">All water relationships</option>' + (cfg.waterOptions || []).map(function (w) { return '<option>' + esc(w) + '</option>'; }).join('') + '</select>' +
       '<select id="price" aria-label="Estimated value"><option value="">All estimated values</option>' + (cfg.priceBands || []).map(function (b, i) { return '<option value="' + i + '">' + esc(b.label) + '</option>'; }).join('') + '</select>' +
-      '<select id="rating" aria-label="Your interest"><option value="">All properties</option>' + RATINGS.map(function (r) { return '<option value="' + r[0] + '">' + r[1] + '</option>'; }).join('') + '</select></div>' +
+      '<select id="rating" aria-label="Your interest"><option value="">All properties</option>' + RATINGS.map(function (r) { return '<option value="' + r[0] + '">' + r[1] + '</option>'; }).join('') + '</select>' +
+      '<button class="resetlink toolbar-reset" id="resetfilters">Reset filters</button></div>' +
       '<div class="propertylist" id="list"></div><div class="profile" id="profile"></div></section></main>' +
       '<footer class="foot">' + esc(cfg.footer) + '</footer>';
   }
@@ -137,7 +143,7 @@
     function payload(addr) {
       var x = byAddr[addr], s = saved[addr];
       return JSON.stringify({ token: remote.token, project: cfg.id, address: addr, number: x.number,
-        interest: ratingLabel[s.rating] || '', notes: s.notes || '', estimate: x.estimate, clientTime: new Date().toISOString() });
+        interest: ratingLabel[s.rating] || (s.notes ? '' : 'Cleared'), notes: s.notes || '', estimate: x.estimate, clientTime: new Date().toISOString() });
     }
     function showStatus(addr) {
       var el = $('savestatus'); if (!el || selected.address !== addr) return;
@@ -206,8 +212,8 @@
       var interested = Object.values(saved).filter(function (v) { return v.rating === 'interested'; }).length;
       $('profile').innerHTML =
         '<div class="eyebrow">' + esc(x.type) + ' · ' + esc(cfg.locality) + '</div><h2>' + esc(x.address) + '</h2>' +
-        '<div class="price">' + money(x.estimate) + '</div>' +
-        '<div class="muted">Preliminary estimate · likely range ' + money(x.low) + '–' + money(x.high) + ' · ' + esc(String(x.confidence).toLowerCase()) + ' confidence</div>' +
+        '<div class="price">' + shortMoney(x.low) + ' – ' + shortMoney(x.high) + '</div>' +
+        '<div class="muted">Most likely about ' + shortMoney(x.estimate) + ' · preliminary estimate, not an appraisal</div>' +
         '<div class="specs">' +
         spec('Bedrooms', x.beds != null ? x.beds : '—') +
         spec('Baths', fmtBaths(x.baths)) +
@@ -217,15 +223,16 @@
         spec('Current owner since', x.ownerSince ? x.ownerSince.display : '—') +
         spec('Est. annual taxes', taxes(x).text, taxes(x).note, (cfg.tax || {}).note) +
         spec('Water relationship', x.water + (x.waterUnconfirmed ? ' (unconfirmed)' : '')) +
-        spec('Research confidence', x.confidence) + '</div>' +
+        '</div>' +
         ((x.features || []).length ? '<div class="eyebrow">Features</div><div class="features">' + x.features.map(function (f) {
           return '<span class="feature">' + esc(f.label) + (f.note ? ' <small>· ' + esc(f.note) + '</small>' : '') + '</span>';
         }).join('') + '</div>' : '') +
         '<div class="eyebrow">Your interest in this property</div>' +
         '<div class="ratings">' + RATINGS.map(function (r) { return '<button class="' + (s.rating === r[0] ? 'active' : '') + '" data-rate="' + r[0] + '">' + r[1] + '</button>'; }).join('') + '</div>' +
         '<textarea id="notes" rows="2" placeholder="What do you like or dislike?">' + esc(s.notes || '') + '</textarea>' +
-        '<div class="actions" style="margin-top:10px;align-items:center"><button id="similar">Find similar homes</button><span class="savestatus" id="savestatus" aria-live="polite"></span></div>' +
-        '<div class="favorites"><b>My shortlist:</b> ' + loved + ' loved · ' + interested + ' interested<br><small>Your choices and notes are saved automatically. Use Export to download a copy.</small></div>';
+        '<div class="actions" style="margin-top:6px;align-items:center;min-height:18px"><span class="savestatus" id="savestatus" aria-live="polite"></span></div>' +
+        '<div class="favorites"><div><b>My shortlist:</b> ' + loved + ' loved · ' + interested + ' interested<br><small>Your choices and notes are saved automatically. Use Export to download a copy.</small></div>' +
+        '<button class="resetlink" id="resetratings">Reset ratings</button></div>';
 
       document.querySelectorAll('[data-rate]').forEach(function (b) {
         b.onclick = function () {
@@ -239,11 +246,13 @@
       };
       $('notes').onblur = function () { if (timers[x.address]) send(x.address); };
       showStatus(x.address);
-      $('similar').onclick = function () {
-        var options = data.filter(function (z) { return z.number !== x.number && z.type === x.type; })
-          .map(function (z) { return { z: z, score: (z.water === x.water ? 4 : 0) + (z.beds === x.beds ? 2 : 0) - Math.abs(z.estimate - x.estimate) / 500000 }; })
-          .sort(function (a, b) { return b.score - a.score; }).slice(0, 5).map(function (v) { return v.z.address; });
-        alert(options.length ? 'Similar properties to explore:\n\n' + options.join('\n') : 'No similar properties found.');
+      $('resetratings').onclick = function () {
+        var any = Object.keys(saved).some(function (a) { return saved[a].rating || saved[a].notes; });
+        if (!any) return;
+        if (!confirm('Clear all your ratings and notes for every property?')) return;
+        Object.keys(saved).forEach(function (a) { saved[a] = Object.assign({}, saved[a], { rating: '', notes: '' }); });
+        persist(); render();
+        Object.keys(saved).forEach(function (a) { if (unsent(a)) queue(a, 400); });   // your sheet records "Cleared"
       };
     }
 
@@ -312,6 +321,23 @@
       l.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(+l.dataset.n); } });
     });
     $('showmap').onclick = function () { setView('map'); };
+    var streetOrder = data.slice().sort(function (a, b) { return a.number - b.number; });
+    $('next').onclick = function () {
+      var i = streetOrder.findIndex(function (x) { return x.number === selected.number; });
+      choose(streetOrder[(i + 1) % streetOrder.length].number);
+    };
+    $('resetfilters').onclick = function () {
+      $('search').value = ''; $('water').value = ''; $('price').value = ''; $('rating').value = '';
+      renderList();
+    };
+    (function hint() {                          // shown once per browser
+      var hk = key + '-hint-seen';
+      try { if (localStorage.getItem(hk)) return; } catch (e) { return; }
+      var h = document.createElement('div'); h.className = 'hint'; h.id = 'hint';
+      h.innerHTML = '<span><b>Welcome.</b> Click any home on the map to see its photos and details · rate the ones you like · use <b>Next ›</b> to tour the street.</span><button id="hintok">Got it</button>';
+      document.querySelector('.mapcard').appendChild(h);
+      $('hintok').onclick = function () { h.remove(); try { localStorage.setItem(hk, '1'); } catch (e) {} };
+    })();
     document.addEventListener('keydown', function (e) {
       if (view !== 'photo' || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;
       if (e.key === 'ArrowRight') { showPhoto(photoIndex + 1); e.preventDefault(); }
