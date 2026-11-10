@@ -56,6 +56,16 @@
     start(cfg, props);
   }
 
+  function spec(label, value, note, title) {
+    return '<div class="spec"' + (title ? ' title="' + esc(title) + '"' : '') + '><label>' + esc(label) + '</label><b>' + esc(value) + '</b>' +
+      (note ? '<small class="specnote">' + esc(note) + '</small>' : '') + '</div>';
+  }
+  function fmtBaths(v) {                      // research notation: "2.1" = 2 full, 1 half
+    if (v == null || v === '') return '—';
+    var m = /^(\d+)(?:\.(\d))?$/.exec(String(v));
+    if (!m) return String(v);
+    return m[2] && m[2] !== '0' ? m[1] + ' full, ' + m[2] + ' half' : m[1];
+  }
   function lotAcres(x) {
     if (x.acres != null) return x.acres;
     var m = /([\d.]+)\s*ac\b/.exec(x.facts || '');   // acreage stated in the supplied facts line
@@ -97,6 +107,11 @@
   }
 
   function start(cfg, data, gate, assetUrl) {
+    function taxes(x) {                        // estimate: assessed value × town rate (config)
+      var t = cfg.tax;
+      if (!t || !x.assessment) return { text: '—', note: x.assessment ? '' : 'Assessment not on file' };
+      return { text: money(Math.round(x.assessment * t.rate / 1000)), note: (t.fiscalYear || '') + ' assessment ' + money(x.assessment) };
+    }
     assetUrl = assetUrl || function (p) { return Promise.resolve(p); };
     shell(cfg, data, gate);
     if (gate) $('lock').onclick = gate.lock;
@@ -178,6 +193,8 @@
           '<span><b>' + esc(x.address) + '</b><small>' + esc(x.water) + (x.type === 'Vacant lot' ? ' · vacant land' : '') + '</small></span>' +
           '<span style="text-align:right"><b><span class="est">EST.</span>' + money(x.estimate) + '</b><small>' + (ratingIcon[(saved[x.address] || {}).rating] || '') + '</small></span></div>';
       }).join('') || '<p style="padding:12px">No matching properties</p>';
+      var L = $('list'), selRow = L.querySelector('.row.selected');   // keep the selected house in view (3-row list)
+      if (selRow && (selRow.offsetTop < L.scrollTop || selRow.offsetTop + selRow.offsetHeight > L.scrollTop + L.clientHeight)) L.scrollTop = selRow.offsetTop;
       document.querySelectorAll('.row').forEach(function (el) {
         el.onclick = function () { choose(+el.dataset.n); };
       });
@@ -192,13 +209,17 @@
         '<div class="price">' + money(x.estimate) + '</div>' +
         '<div class="muted">Preliminary estimate · likely range ' + money(x.low) + '–' + money(x.high) + ' · ' + esc(String(x.confidence).toLowerCase()) + ' confidence</div>' +
         '<div class="specs">' +
-        '<div class="spec"><label>Water relationship</label><b>' + esc(x.water) + (x.waterUnconfirmed ? ' (unconfirmed)' : '') + '</b></div>' +
-        '<div class="spec"><label>Lot</label><b>' + (acres != null ? esc(acres) + ' acres' : '—') + '</b></div>' +
-        '<div class="spec"><label>Bedrooms / baths</label><b>' + esc(x.beds != null ? x.beds : '—') + ' / ' + esc(x.baths != null ? x.baths : '—') + '</b></div>' +
-        '<div class="spec"><label>Living area</label><b>' + (x.sqft ? Number(x.sqft).toLocaleString() + ' sq ft' : 'Land only') + '</b></div>' +
-        '<div class="spec"><label>Year built</label><b>' + esc(x.year || '—') + '</b></div>' +
-        '<div class="spec"><label>Research confidence</label><b>' + esc(x.confidence) + '</b></div></div>' +
-        '<div class="photo">Historical photo gallery coming soon<br>MLS image permissions and dates to be verified</div>' +
+        spec('Bedrooms', x.beds != null ? x.beds : '—') +
+        spec('Baths', fmtBaths(x.baths)) +
+        spec('Square feet', x.sqft ? Number(x.sqft).toLocaleString() : 'Land only') +
+        spec('Lot', acres != null ? acres + ' acres' : '—') +
+        spec('Year built', x.year || '—') +
+        spec('Est. annual taxes', taxes(x).text, taxes(x).note, (cfg.tax || {}).note) +
+        spec('Water relationship', x.water + (x.waterUnconfirmed ? ' (unconfirmed)' : '')) +
+        spec('Research confidence', x.confidence) + '</div>' +
+        ((x.features || []).length ? '<div class="eyebrow">Features</div><div class="features">' + x.features.map(function (f) {
+          return '<span class="feature">' + esc(f.label) + (f.note ? ' <small>· ' + esc(f.note) + '</small>' : '') + '</span>';
+        }).join('') + '</div>' : '') +
         '<div class="eyebrow">Your interest in this property</div>' +
         '<div class="ratings">' + RATINGS.map(function (r) { return '<button class="' + (s.rating === r[0] ? 'active' : '') + '" data-rate="' + r[0] + '">' + r[1] + '</button>'; }).join('') + '</div>' +
         '<textarea id="notes" rows="2" placeholder="What do you like or dislike?">' + esc(s.notes || '') + '</textarea>' +

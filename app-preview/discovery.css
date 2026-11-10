@@ -45,7 +45,8 @@ input,select,textarea{font:inherit;border:1px solid #d6dcd9;border-radius:6px;pa
 button{font:inherit;cursor:pointer;border:1px solid #c9d3d4;background:white;border-radius:6px;padding:9px 11px;color:var(--navy)}
 button.primary{background:var(--navy);color:white;border-color:var(--navy)}
 button.active{background:#e7eee9;border-color:#75918a}
-.propertylist{max-height:245px;overflow:auto;border-bottom:1px solid #e7e7e7}
+.propertylist{position:relative;max-height:164px;overflow:auto;border-bottom:1px solid #e7e7e7;scroll-snap-type:y proximity} /* 3 rows visible */
+.row{scroll-snap-align:start}
 .row{padding:11px 16px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:13px}
 .row:hover,.row.selected{background:#f2f3ef}
 .row b{display:block;font-size:14px}
@@ -60,6 +61,10 @@ button.active{background:#e7eee9;border-color:#75918a}
 .spec{border-top:1px solid #e6e6e6;padding-top:8px}
 .spec label{display:block;color:#7a878b;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
 .spec b{font-size:14px}
+.specnote{display:block;font-size:10.5px;color:#8a979c;margin-top:2px}
+.features{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px}
+.feature{font-size:12px;padding:5px 10px;border:1px solid #d9cdb6;background:#faf6ee;border-radius:14px;color:#3d4d57}
+.feature small{color:#8a979c}
 .photo{background:#e7e9e8;height:115px;display:grid;place-items:center;text-align:center;color:#697b80;font-size:12px;padding:16px;margin:12px 0}
 .ratings{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
 .ratings button{font-size:12px}
@@ -71,7 +76,7 @@ button.active{background:#e7eee9;border-color:#75918a}
 .hidden{display:none}
 .toggle{white-space:nowrap}
 .loaderror{padding:40px 3.5%;font-size:14px;color:#7a2e2e} /* v0.1.1 */
-@media(max-width:900px){.layout{grid-template-columns:1fr}.mapframe{height:47vh;min-height:320px}.propertylist{max-height:230px}.intro{display:block}.intro button{margin-top:12px}}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.mapframe{height:47vh;min-height:320px}.propertylist{max-height:164px}.intro{display:block}.intro button{margin-top:12px}}
 @media print{header{print-color-adjust:exact}.mapframe{height:420px}.toolbar,.propertylist,.ratings,.actions{display:none}.layout{grid-template-columns:1.3fr 1fr}}
 
 /* ---- Private collection welcome (app/gate.js) ---- */
